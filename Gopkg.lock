@@ -7,8 +7,8 @@
     ".",
     "mock"
   ]
-  revision = "42e18825ca2ba54b7618854ac6a1f84100bcb9f2"
-  version = "v0.4.0"
+  revision = "86fafd6ef043ee02475bee9a12293cb047b9a847"
+  version = "v0.4.2"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
@@ -29,9 +29,24 @@
   version = "v1.6.1"
 
 [[projects]]
-  name = "github.com/nlopes/slack"
+  name = "github.com/gorilla/websocket"
   packages = ["."]
-  revision = "d86785d50d4be9c2e11cfbb0ed601f5dcb22899c"
+  revision = "66b9c49e59c6c48f0ffce28c2d8b8a5678502c6d"
+  version = "v1.4.0"
+
+[[projects]]
+  name = "github.com/nlopes/slack"
+  packages = [
+    ".",
+    "slackutilsx"
+  ]
+  revision = "752f784a75e8b640f048a8a453466cca64c83a47"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "c059e472caf75dbe73903f6521a20abac245b17f"
 
 [[projects]]
   name = "github.com/pmezard/go-difflib"
@@ -45,15 +60,9 @@
   revision = "b91bfb9ebec76498946beb6af7c0230c7cc7ba6c"
   version = "v1.2.0"
 
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/net"
-  packages = ["websocket"]
-  revision = "0ed95abb35c445290478a5348a7b38bb154135fd"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "84eef14672425fa8ec1fc324e48d9cfc6f62df36aabf9203fe030861634041d8"
+  inputs-digest = "9606f60bf026b39694ccf26b2a929353e5ab425dd763437cec65b485e1b56333"
   solver-name = "gps-cdcl"
   solver-version = 1
