@@ -1,6 +1,8 @@
 package slack
 
 import (
+	"fmt"
+
 	"github.com/botopolis/bot"
 	"github.com/nlopes/slack"
 )
@@ -90,6 +92,11 @@ func (p *proxy) Forward(in <-chan slack.RTMEvent, out chan<- bot.Message) {
 func (p *proxy) translate(ev *slack.MessageEvent) bot.Message {
 	user, _ := p.Store.UserByID(ev.User)
 	channel, _ := p.Store.ChannelByID(ev.Channel)
+
+	// Prepend the bots name whenever a direct message is parsed
+	if ev.Channel[0] == 'D' {
+		ev.Text = fmt.Sprintf("@%s %s", p.Name, ev.Text)
+	}
 
 	m := bot.Message{
 		User:     user.Name,
