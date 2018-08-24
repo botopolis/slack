@@ -81,7 +81,7 @@ func (p *proxy) Forward(in <-chan slack.RTMEvent, out chan<- bot.Message) {
 		case *slack.RTMError:
 			p.Robot.Logger.Errorf("slack: RTM Error: %s", ev.Error())
 		case *slack.ConnectionErrorEvent:
-			p.Robot.Logger.Error("slack: Connection Error")
+			p.Robot.Logger.Error("slack: Connection Error: %s", ev.Error())
 		case *slack.InvalidAuthEvent:
 			p.Robot.Logger.Error("slack: Invalid Credentials")
 			return
