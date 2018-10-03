@@ -1,8 +1,8 @@
 language: go
 
 go:
-  - 1.9
-  - master
+  - "1.10"
+  - "master"
 
 env:
   - DEP_VERSION="0.4.1"
