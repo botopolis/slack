@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/botopolis/slack/compare/v0.5.1...master)
+## [Unreleased](https://github.com/botopolis/slack/compare/v0.6.0...master)
+
+## [0.6.0](https://github.com/botopolis/slack/compare/v0.5.1...v0.6.0)
+
+### Added
+
+- Interactive slack messages (example [here](./action/example_test.go)) ([#1](https://github.com/botopolis/slack/pull/1))
 
 ## [0.5.1](https://github.com/botopolis/slack/compare/v0.5.0...v0.5.1)
 
