@@ -1,6 +1,6 @@
 # botopolis Slack adapter
 
-[![GoDoc](https://godoc.org/github.com/botopolis/slack?status.svg)](https://godoc.org/github.com/botopolis/slack) [![Build Status](https://travis-ci.org/botopolis/slack.svg?branch=master)](https://travis-ci.org/botopolis/slack) [![Test Coverage](https://api.codeclimate.com/v1/badges/6f2b18bd489c6c4516f6/test_coverage)](https://codeclimate.com/github/botopolis/slack/test_coverage)
+[![GoDoc](https://godoc.org/github.com/botopolis/slack?status.svg)](https://godoc.org/github.com/botopolis/slack) [![Build Status](https://circleci.com/gh/botopolis/slack.svg?style=svg)](https://circleci.com/gh/botopolis/slack) [![Test Coverage](https://api.codeclimate.com/v1/badges/6f2b18bd489c6c4516f6/test_coverage)](https://codeclimate.com/github/botopolis/slack/test_coverage)
 
 This is a [botopolis](https://github.com/botopolis/bot) adapter to use with
 [Slack](https://slack.com).
