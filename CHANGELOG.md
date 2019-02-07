@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/botopolis/slack/compare/v0.6.0...master)
 
+- Don't rely on deprecated username ([#16](https://github.com/botopolis/slack/pull/16))
+
 ## [0.6.0](https://github.com/botopolis/slack/compare/v0.5.1...v0.6.0)
 
 ### Added
