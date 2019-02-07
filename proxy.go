@@ -26,8 +26,24 @@ func (p *proxy) onConnect(ev *slack.ConnectedEvent) {
 	if err := p.Store.Update(); err != nil {
 		p.Adapter.Robot.Logger.Error("slack:", err)
 	}
+
 	p.BotID = ev.Info.User.ID
 	p.Name = ev.Info.User.Name
+
+	user, err := p.Client.GetUserInfo(p.BotID)
+	if err != nil {
+		p.Adapter.Robot.Logger.Error("slack: Unable to fetch bot user information.", err)
+		return
+	}
+
+	if user.Profile.DisplayName != "" {
+		p.Name = user.Profile.DisplayName
+		return
+	}
+
+	if user.Profile.RealName != "" {
+		p.Name = user.Profile.RealName
+	}
 }
 
 func (p *proxy) Send(m bot.Message) error {
