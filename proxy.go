@@ -36,11 +36,6 @@ func (p *proxy) onConnect(ev *slack.ConnectedEvent) {
 		return
 	}
 
-	if user.Profile.DisplayName != "" {
-		p.Name = user.Profile.DisplayName
-		return
-	}
-
 	if user.Profile.RealName != "" {
 		p.Name = user.Profile.RealName
 	}

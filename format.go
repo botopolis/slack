@@ -42,6 +42,9 @@ func (f formatter) formatLinks(in string) string {
 				return "@" + label
 			}
 			if user, ok := f.store.UserByID(link); ok {
+				if user.RealName != "" {
+					return "@" + user.RealName
+				}
 				return "@" + user.Name
 			}
 		case "#":

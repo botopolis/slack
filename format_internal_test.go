@@ -112,6 +112,9 @@ func TestFormatter(t *testing.T) {
 	for _, c := range formatTestCases {
 		assert.Equal(c.Out, f.Format(&slack.MessageEvent{Msg: slack.Msg{Text: c.In}}), c.Should)
 	}
+
+	store.User = slack.User{ID: "U1234", RealName: "bobby", Name: "bob"}
+	assert.Equal("foo @bobby bar", f.Format(&slack.MessageEvent{Msg: slack.Msg{Text: "foo <@U1234> bar"}}), "use real name")
 }
 
 func TestFormatter_fallback(t *testing.T) {
