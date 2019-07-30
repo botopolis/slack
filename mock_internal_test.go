@@ -8,6 +8,7 @@ import (
 type testProxy struct {
 	C            chan bot.Message
 	SendFunc     func(bot.Message) error
+	ReplyFunc    func(bot.Message) error
 	ReactFunc    func(bot.Message) error
 	SetTopicFunc func(room, topic string) error
 }
@@ -15,6 +16,7 @@ type testProxy struct {
 func newTestProxy() *testProxy {
 	return &testProxy{
 		SendFunc:     func(bot.Message) error { return nil },
+		ReplyFunc:    func(bot.Message) error { return nil },
 		ReactFunc:    func(bot.Message) error { return nil },
 		SetTopicFunc: func(string, string) error { return nil },
 	}
@@ -23,6 +25,7 @@ func newTestProxy() *testProxy {
 func (p *testProxy) Connect() chan bot.Message         { return p.C }
 func (p *testProxy) Disconnect()                       {}
 func (p *testProxy) Send(m bot.Message) error          { return p.SendFunc(m) }
+func (p *testProxy) Reply(m bot.Message) error         { return p.ReplyFunc(m) }
 func (p *testProxy) React(m bot.Message) error         { return p.ReactFunc(m) }
 func (p *testProxy) SetTopic(room, topic string) error { return p.SetTopicFunc(room, topic) }
 

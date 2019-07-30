@@ -21,6 +21,7 @@ type Adapter struct {
 		Connect() chan bot.Message
 		Disconnect()
 		Send(bot.Message) error
+		Reply(bot.Message) error
 		React(bot.Message) error
 		SetTopic(room, topic string) error
 	}
@@ -120,12 +121,12 @@ func (a *Adapter) Reply(m bot.Message) error {
 		return errors.New("No room provided")
 	}
 
-	// No need to @ the user if it's a DM
-	if m.Room[0] != 'D' {
-		m.Text = "<@" + m.User + "> " + m.Text
+	// No need to thread the response in a DM.
+	if m.Room[0] == 'D' {
+		return a.proxy.Send(m)
 	}
 
-	return a.proxy.Send(m)
+	return a.proxy.Reply(m)
 }
 
 // Topic uses the web API to change the topic. It prefers
