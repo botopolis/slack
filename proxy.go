@@ -41,6 +41,23 @@ func (p *proxy) onConnect(ev *slack.ConnectedEvent) {
 	}
 }
 
+func (p *proxy) Reply(m bot.Message) error {
+	// Force special messages to use "Send" and skip if there is no
+	// message it's responding to.
+	if m.Params != nil || m.Envelope == nil {
+		return p.Send(m)
+	}
+
+	msg := m.Envelope.(slack.Message)
+	threadTs := msg.ThreadTimestamp
+	if threadTs == "" {
+		threadTs = msg.Timestamp
+	}
+
+	p.RTM.SendMessage(p.RTM.NewOutgoingMessage(m.Text, m.Room, slack.RTMsgOptionTS(threadTs)))
+	return nil
+}
+
 func (p *proxy) Send(m bot.Message) error {
 	if m.Params == nil {
 		p.RTM.SendMessage(p.RTM.NewOutgoingMessage(m.Text, m.Room))

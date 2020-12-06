@@ -163,25 +163,30 @@ func TestReply(t *testing.T) {
 	envelope.User = user
 
 	cases := []struct {
-		In  bot.Message
-		Out bot.Message
-		Err bool
+		Name string
+		In   bot.Message
+		Out  bot.Message
+		Err  bool
 	}{
 		{
-			In:  bot.Message{Room: "D4321", Text: "foo", Envelope: envelope},
-			Out: bot.Message{User: user, Room: "D4321", Text: "foo", Envelope: envelope},
+			Name: "When DMing",
+			In:   bot.Message{Room: "D4321", Text: "foo", Envelope: envelope},
+			Out:  bot.Message{User: user, Room: "D4321", Text: "foo", Envelope: envelope},
 		},
 		{
-			In:  bot.Message{Room: "general", Text: "foo", Envelope: envelope},
-			Out: bot.Message{User: user, Room: "C1234", Text: "<@U1234> foo", Envelope: envelope},
+			Name: "When replying in a channel",
+			In:   bot.Message{Room: "general", Text: "foo", Envelope: envelope},
+			Out:  bot.Message{User: user, Room: "C1234", Text: "foo", Envelope: envelope},
 		},
 		{
-			In:  bot.Message{User: "Jane", Room: "general", Text: "foo"},
-			Err: true,
+			Name: "Given an invalid user",
+			In:   bot.Message{User: "Jane", Room: "general", Text: "foo"},
+			Err:  true,
 		},
 		{
-			In:  bot.Message{User: user, Text: "foo"},
-			Err: true,
+			Name: "Given an invalid room",
+			In:   bot.Message{User: user, Text: "foo"},
+			Err:  true,
 		},
 	}
 	store := newTestStore()
@@ -191,16 +196,21 @@ func TestReply(t *testing.T) {
 	store.User.Name = "Jean"
 
 	for _, c := range cases {
-		proxy, run := setUpProxySend(t, c.Out)
-		adapter := Adapter{Store: store, proxy: proxy, BotID: user}
-		err := adapter.Reply(c.In)
-		if c.Err {
-			assert.NotNil(t, err)
-			assert.False(t, *run)
-		} else {
-			assert.Nil(t, err)
-			assert.True(t, *run)
-		}
+		t.Run(c.Name, func(t *testing.T) {
+			proxy, run := setUpProxyReply(t, c.Out)
+			if c.Name == "When DMing" {
+				proxy, run = setUpProxySend(t, c.Out)
+			}
+			adapter := Adapter{Store: store, proxy: proxy, BotID: user}
+			err := adapter.Reply(c.In)
+			if c.Err {
+				assert.NotNil(t, err)
+				assert.False(t, *run)
+			} else {
+				assert.Nil(t, err)
+				assert.True(t, *run)
+			}
+		})
 	}
 }
 
@@ -256,6 +266,18 @@ func setUpProxySend(t *testing.T, out bot.Message) (*testProxy, *bool) {
 	var run bool
 	proxy := newTestProxy()
 	proxy.SendFunc = func(m bot.Message) error {
+		assert.Equal(t, out, m)
+		run = true
+		return nil
+	}
+
+	return proxy, &run
+}
+
+func setUpProxyReply(t *testing.T, out bot.Message) (*testProxy, *bool) {
+	var run bool
+	proxy := newTestProxy()
+	proxy.ReplyFunc = func(m bot.Message) error {
 		assert.Equal(t, out, m)
 		run = true
 		return nil
