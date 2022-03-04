@@ -49,6 +49,7 @@ func (p *proxy) onConnect(ev *slack.ConnectedEvent) {
 type TextAttachmentParams struct {
 	Text        string
 	Attachments []slack.Attachment
+	Blocks      []slack.Block
 	Username    string
 }
 
@@ -62,6 +63,7 @@ func (p *proxy) Send(m bot.Message) error {
 		_, _, err := p.Client.PostMessage(m.Room,
 			slack.MsgOptionText(m.Text, false),
 			slack.MsgOptionAttachments(pm.Attachments...),
+			slack.MsgOptionBlocks(pm.Blocks...),
 		)
 		return err
 	}
