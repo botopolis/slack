@@ -12,6 +12,8 @@ import (
 )
 
 // Plugin conforms to the botopolis/bot.Plugin interface
+// This plugin exposes a pub-sub system the and allows us to
+// handle user interactions from other plugins.
 type Plugin struct {
 	*registry
 	// Path at which our webhook sits.
@@ -59,7 +61,7 @@ func (p Plugin) webhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonBody := []byte(r.FormValue("payload"))
-	var cb slack.AttachmentActionCallback
+	var cb slack.InteractionCallback
 	if err := json.Unmarshal(jsonBody, &cb); err != nil {
 		p.logger.Errorf("slack/action: Invalid webhook: %v\n", err)
 		w.WriteHeader(http.StatusBadRequest)

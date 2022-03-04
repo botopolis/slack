@@ -44,7 +44,7 @@ func (p ExamplePlugin) Load(r *bot.Robot) {
 	})
 
 	// handle example callback ID with a function
-	actions.Add("example", func(a oslack.AttachmentActionCallback) {
+	actions.Add("example", func(a oslack.InteractionCallback) {
 		attachmentActions := a.ActionCallback.AttachmentActions
 		if len(attachmentActions) < 0 {
 			return

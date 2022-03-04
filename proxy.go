@@ -51,6 +51,11 @@ type TextAttachmentParams struct {
 	Attachments []slack.Attachment
 	Blocks      []slack.Block
 	Username    string
+
+	// When handling interaction requests should be sent here instead.
+	ResponseURL string
+	// ReplaceOriginal will update the original message if set to true.
+	ReplaceOriginal bool
 }
 
 func (p *proxy) Send(m bot.Message) error {
@@ -60,11 +65,21 @@ func (p *proxy) Send(m bot.Message) error {
 	}
 
 	if pm, ok := m.Params.(TextAttachmentParams); ok {
-		_, _, err := p.Client.PostMessage(m.Room,
+		opts := []slack.MsgOption{
 			slack.MsgOptionText(m.Text, false),
 			slack.MsgOptionAttachments(pm.Attachments...),
 			slack.MsgOptionBlocks(pm.Blocks...),
-		)
+		}
+
+		if pm.ResponseURL != "" {
+			if pm.ReplaceOriginal {
+				opts = append(opts, slack.MsgOptionReplaceOriginal(pm.ResponseURL))
+			} else {
+				opts = append(opts, slack.MsgOptionResponseURL(pm.ResponseURL, "in_channel"))
+			}
+		}
+
+		_, _, err := p.Client.PostMessage(m.Room, opts...)
 		return err
 	}
 

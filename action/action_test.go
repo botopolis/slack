@@ -101,8 +101,8 @@ func TestWebhook_callback(t *testing.T) {
 	}
 
 	p := Plugin{SigningSecret: signingSecret, registry: &registry{}, logger: logger, skipVerifyHeader: true}
-	p.Add("bar", func(slack.AttachmentActionCallback) { done <- "bar" })
-	p.Add("foo", func(slack.AttachmentActionCallback) { done <- "foo" })
+	p.Add("bar", func(slack.InteractionCallback) { done <- "bar" })
+	p.Add("foo", func(slack.InteractionCallback) { done <- "foo" })
 
 	p.webhook(httptest.NewRecorder(), &fooReq)
 	assert.Equal(t, "foo", <-done)
