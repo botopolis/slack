@@ -1,8 +1,8 @@
 package slack
 
 import (
-	"fmt"
 	"errors"
+	"fmt"
 
 	"github.com/botopolis/bot"
 	"github.com/slack-go/slack"
@@ -76,12 +76,16 @@ func parseDM(a *Adapter, m *bot.Message) error {
 		return nil
 	}
 
-	_, _, imID, err := a.Client.OpenIMChannel(m.User)
+	channel, _, _, err := a.Client.OpenConversation(&slack.OpenConversationParameters{
+		ChannelID: "",
+		ReturnIM:  false,
+		Users:     []string{m.User},
+	})
 	if err != nil {
 		return fmt.Errorf("Couldn't open IM to User %s: %e", m.User, err)
 	}
 
-	m.Room = imID
+	m.Room = channel.ID
 	return nil
 }
 
