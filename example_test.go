@@ -6,7 +6,7 @@ import (
 
 	"github.com/botopolis/bot"
 	"github.com/botopolis/slack"
-	slacker "github.com/nlopes/slack"
+	slacker "github.com/slack-go/slack"
 )
 
 func Example() {
@@ -30,7 +30,7 @@ func ExampleAdapter_Send() {
 
 func ExampleAdapter_Send_custom() {
 	adapter := slack.New(os.Getenv("SLACK_TOKEN"))
-	adapter.Send(bot.Message{Params: slacker.PostMessageParameters{
+	adapter.Send(bot.Message{Params: slack.TextAttachmentParams{
 		Username: "ci",
 		Attachments: []slacker.Attachment{
 			{

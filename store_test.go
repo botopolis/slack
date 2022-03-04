@@ -3,7 +3,7 @@ package slack
 import (
 	"testing"
 
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -82,7 +82,7 @@ func TestStore_ims(t *testing.T) {
 	assert.False(t, ok)
 }
 
-func slackUserInfo() *slack.Info {
+func slackUserInfo() *Info {
 	user := slack.User{ID: "U1234", Name: "Jean"}
 	channel := slack.Channel{}
 	channel.ID = "C1234"
@@ -90,7 +90,7 @@ func slackUserInfo() *slack.Info {
 	im := slack.IM{}
 	im.ID = "D1234"
 	im.User = "U1234"
-	return &slack.Info{
+	return &Info{
 		Users:    []slack.User{user},
 		Channels: []slack.Channel{channel},
 		IMs:      []slack.IM{im},

@@ -5,7 +5,7 @@ import (
 
 	"github.com/botopolis/bot"
 	"github.com/botopolis/bot/mock"
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -96,10 +96,11 @@ func TestProxy(t *testing.T) {
 
 func TestProxyForward_connect(t *testing.T) {
 	var run bool
-	info := &slack.Info{User: &slack.UserDetails{ID: "B1234", Name: "beardroid"}}
+	user := &slack.UserDetails{ID: "B1234", Name: "beardroid"}
+	info := &Info{Users: []slack.User{{Name: user.Name, ID: user.ID}}}
 
 	store := newTestStore()
-	store.LoadFunc = func(i *slack.Info) {
+	store.LoadFunc = func(i *Info) {
 		assert.Equal(t, info, i)
 		run = true
 	}
@@ -108,12 +109,12 @@ func TestProxyForward_connect(t *testing.T) {
 	p.Load(bot.New(mock.NewChat()))
 
 	ch := make(chan slack.RTMEvent, 2)
-	ch <- slack.RTMEvent{Data: &slack.ConnectedEvent{Info: info}}
+	ch <- slack.RTMEvent{Data: &slack.ConnectedEvent{Info: &slack.Info{User: user}}}
 	close(ch)
 	p.Forward(ch, make(chan bot.Message))
 
-	assert.Equal(t, info.User.ID, p.Adapter.BotID)
-	assert.Equal(t, info.User.Name, p.Adapter.Username())
+	assert.Equal(t, info.Users[0].ID, p.Adapter.BotID)
+	assert.Equal(t, info.Users[0].Name, p.Adapter.Name)
 	assert.True(t, run)
 }
 

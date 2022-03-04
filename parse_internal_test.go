@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/botopolis/bot"
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 	"github.com/stretchr/testify/assert"
 )
 

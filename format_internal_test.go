@@ -2,7 +2,7 @@ package slack // don't want to export, do want to test
 import (
 	"testing"
 
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 	"github.com/stretchr/testify/assert"
 )
 

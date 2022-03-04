@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	"github.com/botopolis/bot"
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 )
 
 // Plugin conforms to the botopolis/bot.Plugin interface
@@ -20,6 +20,9 @@ type Plugin struct {
 	SigningSecret string
 
 	logger bot.Logger
+
+	// Skip Verifying Header in tests as verifications are based on time
+	skipVerifyHeader bool
 }
 
 // New returns a new plugin taking arguments for path and token
@@ -47,10 +50,12 @@ func (p Plugin) webhook(w http.ResponseWriter, r *http.Request) {
 	r.Body = ioutil.NopCloser(bytes.NewBuffer(b))
 	p.logger.Debugf("slack/action: Received webhook to %s\n", p.Path)
 
-	if err := p.verify(r.Header, b); err != nil {
-		p.logger.Errorf("slack/action: Invalid webhook: %v\n", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
+	if !p.skipVerifyHeader {
+		if err := p.verify(r.Header, b); err != nil {
+			p.logger.Errorf("slack/action: Invalid webhook: %v\n", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 	}
 
 	jsonBody := []byte(r.FormValue("payload"))

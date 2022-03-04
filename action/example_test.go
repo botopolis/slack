@@ -4,8 +4,9 @@ import (
 	"fmt"
 
 	"github.com/botopolis/bot"
+	"github.com/botopolis/slack"
 	"github.com/botopolis/slack/action"
-	oslack "github.com/nlopes/slack"
+	oslack "github.com/slack-go/slack"
 )
 
 type ExamplePlugin struct{}
@@ -21,7 +22,7 @@ func (p ExamplePlugin) Load(r *bot.Robot) {
 
 	r.Hear(bot.Regexp("trigger"), func(r bot.Responder) error {
 		return r.Send(bot.Message{
-			Params: oslack.PostMessageParameters{
+			Params: slack.TextAttachmentParams{
 				Attachments: []oslack.Attachment{{
 					Text:       "Trigger example",
 					CallbackID: "example",
@@ -44,10 +45,11 @@ func (p ExamplePlugin) Load(r *bot.Robot) {
 
 	// handle example callback ID with a function
 	actions.Add("example", func(a oslack.AttachmentActionCallback) {
-		if len(a.Actions) < 0 {
+		attachmentActions := a.ActionCallback.AttachmentActions
+		if len(attachmentActions) < 0 {
 			return
 		}
-		if a.Actions[0].Value == "true" {
+		if attachmentActions[0].Value == "true" {
 			// do the thing
 		}
 	})

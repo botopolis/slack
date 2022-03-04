@@ -3,7 +3,7 @@ package action
 import (
 	"sync"
 
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 )
 
 type registry struct {

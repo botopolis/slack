@@ -2,7 +2,7 @@ package slack
 
 import (
 	"github.com/botopolis/bot"
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 )
 
 type testProxy struct {
@@ -27,7 +27,7 @@ func (p *testProxy) React(m bot.Message) error         { return p.ReactFunc(m) }
 func (p *testProxy) SetTopic(room, topic string) error { return p.SetTopicFunc(room, topic) }
 
 type testStore struct {
-	LoadFunc   func(*slack.Info)
+	LoadFunc   func(*Info)
 	UpdateFunc func() error
 	User       slack.User
 	Channel    slack.Channel
@@ -36,7 +36,7 @@ type testStore struct {
 
 func newTestStore() *testStore {
 	return &testStore{
-		LoadFunc:   func(*slack.Info) {},
+		LoadFunc:   func(*Info) {},
 		UpdateFunc: func() error { return nil },
 		User:       slack.User{},
 		Channel:    slack.Channel{},
@@ -44,8 +44,8 @@ func newTestStore() *testStore {
 	}
 }
 
-func (s *testStore) Load(i *slack.Info) { s.LoadFunc(i) }
-func (s *testStore) Update() error      { return s.UpdateFunc() }
+func (s *testStore) Load(i *Info)  { s.LoadFunc(i) }
+func (s *testStore) Update() error { return s.UpdateFunc() }
 func (s *testStore) UserByID(id string) (slack.User, bool) {
 	if s.User.ID == id {
 		return s.User, true

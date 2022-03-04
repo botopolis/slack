@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/botopolis/bot"
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 )
 
 type parser func(*Adapter, *bot.Message) error

@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/botopolis/bot"
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 )
 
 type slackLogger struct{ bot.Logger }
@@ -46,8 +46,8 @@ func New(secret string) *Adapter {
 
 // Load provides the slack adapter access to the Robot's logger
 func (a *Adapter) Load(r *bot.Robot) {
-	slack.SetLogger(&slackLogger{r.Logger})
-	a.Client.SetDebug(true)
+	slack.OptionLog(&slackLogger{r.Logger})
+	slack.OptionDebug(true)(a.Client)
 	a.Robot = r
 }
 

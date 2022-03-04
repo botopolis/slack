@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/botopolis/bot"
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 )
 
 type proxy struct {
@@ -22,13 +22,17 @@ func newProxy(a *Adapter) *proxy {
 }
 
 func (p *proxy) onConnect(ev *slack.ConnectedEvent) {
-	p.Store.Load(ev.Info)
+	userInfo := *ev.Info.User
+
+	p.Store.Load(&Info{
+		Users: []slack.User{{Name: userInfo.Name, ID: userInfo.ID}},
+	})
 	if err := p.Store.Update(); err != nil {
 		p.Adapter.Robot.Logger.Error("slack:", err)
 	}
 
-	p.BotID = ev.Info.User.ID
-	p.Name = ev.Info.User.Name
+	p.BotID = userInfo.ID
+	p.Name = userInfo.Name
 
 	user, err := p.Client.GetUserInfo(p.BotID)
 	if err != nil {
@@ -41,14 +45,24 @@ func (p *proxy) onConnect(ev *slack.ConnectedEvent) {
 	}
 }
 
+// TextAttachmentParams contains the information needed to post a message with attachments
+type TextAttachmentParams struct {
+	Text        string
+	Attachments []slack.Attachment
+	Username    string
+}
+
 func (p *proxy) Send(m bot.Message) error {
 	if m.Params == nil {
 		p.RTM.SendMessage(p.RTM.NewOutgoingMessage(m.Text, m.Room))
 		return nil
 	}
 
-	if pm, ok := m.Params.(slack.PostMessageParameters); ok {
-		_, _, err := p.Client.PostMessage(m.Room, m.Text, pm)
+	if pm, ok := m.Params.(TextAttachmentParams); ok {
+		_, _, err := p.Client.PostMessage(m.Room,
+			slack.MsgOptionText(m.Text, false),
+			slack.MsgOptionAttachments(pm.Attachments...),
+		)
 		return err
 	}
 
@@ -62,7 +76,7 @@ func (p *proxy) React(m bot.Message) error {
 }
 
 func (p *proxy) SetTopic(room, topic string) error {
-	_, err := p.Client.SetChannelTopic(room, topic)
+	_, err := p.Client.SetTopicOfConversation(room, topic)
 	return err
 }
 
@@ -74,8 +88,11 @@ func (p *proxy) Connect() chan bot.Message {
 }
 
 func (p *proxy) Disconnect() {
-	if p.RTM != nil {
-		p.RTM.Disconnect()
+	if p.RTM == nil {
+		return
+	}
+	if err := p.RTM.Disconnect(); err != nil {
+		p.Adapter.Robot.Logger.Error("slack: Unable to disconnect.", err)
 	}
 }
 

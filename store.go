@@ -3,13 +3,20 @@ package slack
 import (
 	"sync"
 
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 )
+
+// Info contains lists of relevant slack information (users, channels, ims)
+type Info struct {
+	Users    []slack.User
+	Channels []slack.Channel
+	IMs      []slack.IM
+}
 
 // Store is the interface to expect from adapter.Store
 type Store interface {
-	// Load takes slack info and adds new users and channels from it
-	Load(*slack.Info)
+	// Load takes Info and adds new users and channels from it
+	Load(*Info)
 	// Update queries Slack's web API for users and channels
 	Update() error
 	// UserByID queries the store for a User by ID
@@ -48,9 +55,10 @@ func newMemoryStore(c *slack.Client) *memoryStore {
 	return m
 }
 
-func (s *memoryStore) Load(i *slack.Info) {
+func (s *memoryStore) Load(i *Info) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
 	for _, u := range i.Users {
 		s.users[u.ID] = u
 		s.indices["user:name:"+u.Name] = u.ID
@@ -68,15 +76,43 @@ func (s *memoryStore) Load(i *slack.Info) {
 	}
 }
 
+func (s *memoryStore) getAllChannelsForTypes(t ...string) (allChannels []slack.Channel, err error) {
+	conversationParams := slack.GetConversationsParameters{ExcludeArchived: true, Types: t}
+	for {
+		channels, cursor, err := s.client.GetConversations(&conversationParams)
+		if err != nil {
+			return channels, err
+		}
+
+		allChannels = append(allChannels, channels...)
+		if cursor == "" {
+			// End of pagination
+			break
+		}
+		conversationParams.Cursor = cursor
+	}
+
+	return allChannels, nil
+}
+
 func (s *memoryStore) Update() (err error) {
-	info := slack.Info{}
+	info := Info{}
 	if info.Users, err = s.client.GetUsers(); err != nil {
 		return err
 	}
 
-	if info.Channels, err = s.client.GetChannels(true); err != nil {
+	if info.Channels, err = s.getAllChannelsForTypes("public_channel", "private_channel"); err != nil {
 		return err
 	}
+
+	imChannels, err := s.getAllChannelsForTypes("im")
+	if err != nil {
+		return err
+	}
+	for _, channel := range imChannels {
+		info.IMs = append(info.IMs, slack.IM{Conversation: channel.GroupConversation.Conversation})
+	}
+
 	s.Load(&info)
 	return err
 }
