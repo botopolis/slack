@@ -19,16 +19,22 @@ type Store interface {
 	Load(*Info)
 	// Update queries Slack's web API for users and channels
 	Update() error
+	// Users returns all users
+	Users() []slack.User
 	// UserByID queries the store for a User by ID
 	UserByID(id string) (slack.User, bool)
 	// UserByName queries the store for a User by Name
 	UserByName(name string) (slack.User, bool)
 	// UserByEmail queries the store for a User by Name
 	UserByEmail(name string) (slack.User, bool)
+	// Channels returns all channels
+	Channels() []slack.Channel
 	// ChannelByID queries the store for a Channel by ID
 	ChannelByID(id string) (slack.Channel, bool)
 	// ChannelByName queries the store for a Channel by Name
 	ChannelByName(id string) (slack.Channel, bool)
+	// IMs returns all IMs
+	IMs() []slack.IM
 	// IMByID queries the store for a IM by ID
 	IMByID(id string) (slack.IM, bool)
 	// IMByUserID queries the store for a DM by User ID
@@ -117,6 +123,14 @@ func (s *memoryStore) Update() (err error) {
 	return err
 }
 
+func (s *memoryStore) Users() []slack.User {
+	users := make([]slack.User, 0, len(s.users))
+	for _, value := range s.users {
+		users = append(users, value)
+	}
+	return users
+}
+
 func (s *memoryStore) UserByID(id string) (slack.User, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -136,6 +150,14 @@ func (s *memoryStore) UserByEmail(name string) (slack.User, bool) {
 	return s.UserByID(s.indices["user:email:"+name])
 }
 
+func (s *memoryStore) Channels() []slack.Channel {
+	channels := make([]slack.Channel, 0, len(s.channels))
+	for _, value := range s.channels {
+		channels = append(channels, value)
+	}
+	return channels
+}
+
 func (s *memoryStore) ChannelByID(id string) (slack.Channel, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -147,6 +169,14 @@ func (s *memoryStore) ChannelByName(name string) (slack.Channel, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	return s.ChannelByID(s.indices["channel:name:"+name])
+}
+
+func (s *memoryStore) IMs() []slack.IM {
+	ims := make([]slack.IM, 0, len(s.ims))
+	for _, value := range s.ims {
+		ims = append(ims, value)
+	}
+	return ims
 }
 
 func (s *memoryStore) IMByID(id string) (slack.IM, bool) {

@@ -52,6 +52,7 @@ func (s *testStore) UserByID(id string) (slack.User, bool) {
 	}
 	return s.User, false
 }
+func (s *testStore) Users() []slack.User { return nil }
 func (s *testStore) UserByName(name string) (slack.User, bool) {
 	if s.User.Name == name {
 		return s.User, true
@@ -64,6 +65,7 @@ func (s *testStore) UserByEmail(email string) (slack.User, bool) {
 	}
 	return s.User, false
 }
+func (s *testStore) Channels() []slack.Channel { return nil }
 func (s *testStore) ChannelByID(id string) (slack.Channel, bool) {
 	if s.Channel.ID == id {
 		return s.Channel, true
@@ -76,6 +78,7 @@ func (s *testStore) ChannelByName(name string) (slack.Channel, bool) {
 	}
 	return s.Channel, false
 }
+func (s *testStore) IMs() []slack.IM { return nil }
 func (s *testStore) IMByID(id string) (slack.IM, bool) {
 	if s.IM.ID == id {
 		return s.IM, true
